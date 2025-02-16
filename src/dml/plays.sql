@@ -72,6 +72,7 @@ copy (
         then 'fly_ball'
         when "line" = 1
         then 'line_drive'
+        else null
     end as hit_trajectory
     , case
         when pko1 = 1
@@ -104,7 +105,6 @@ copy (
     , case when br1_post = '' then null else br1_pre end as on_first_post
     , case when br1_post = '' then null else br1_pre end as on_second_post
     , case when br1_post = '' then null else br1_pre end as on_third_post
-    , runs as runs_scored
     , case when run_b = '' then 0 else 1 end as batter_scored
     , case when run1 = '' then 0 else 1 end as on_first_scored
     , case when run2 = '' then 0 else 1 end as on_second_scored
@@ -122,6 +122,7 @@ copy (
     , "date" % 100 as dy
     from 'data/raw/plays.csv'
     where "date" between {{ start }} * 10000 and {{ end }} * 10000
+    and coalesce(event_type, 'other') != 'other'
 ) to 'data/build/plays'
 (
     format parquet,
