@@ -1,31 +1,22 @@
 copy (
-    select team_abbr
-    , case
-        when league = 'A'
-        then 'american'
-        when league = 'N'
-        then 'national'
-        else 'unknown'
-    end as league
-    , location
-    , team_name
-    , cast(regexp_replace(filename, '[^0-9]', '', 'g') as int) as yr
-    from read_csv(
-        'data/raw/files_raw/teams/*.csv', -- originally the TEAM<YYYY> files
-        names = [
-            team_abbr
-            , league
-            , location
-            , team_name
-        ],
-        header = false,
-        filename = true
-    )
+    select team as team_id
+    , city as location
+    , nickname
+    , make_date(
+        first_g // 10000
+        , (first_g // 100) % 100
+        , first_g % 100
+    ) as first_game
+    , make_date(
+        last_g // 10000
+        , (last_g // 100) % 100
+        , last_g % 100
+    ) as last_game
+    from 'data/raw/biodata/teams0.csv'
 )
-to 'data/build/teams'
+to 'data/build/teams.csv'
 (
-    format parquet,
-    partition_by (yr),
+    format csv,
     overwrite true
 )
 ;

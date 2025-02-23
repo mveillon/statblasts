@@ -15,8 +15,20 @@ def run() -> None:
         description=run.__doc__,
     )
     parser.add_argument("-f", "--file", help="the file of the .sql file to run")
-    parser.add_argument("-s", "--start", default=str(date.min.year), help="the first year of data to read")
-    parser.add_argument("-e", "--end", default=str(date.max.year), help="the last year of data to read")
+    parser.add_argument(
+        "-s",
+        "--start",
+        type=int,
+        default=date.min.year,
+        help="the first year of data to read. Accesible in SQL file as {{ start }}",
+    )
+    parser.add_argument(
+        "-e",
+        "--end",
+        type=int,
+        default=date.max.year,
+        help="the last year of data to read. Accesible in SQL file as {{ end }}",
+    )
     args = parser.parse_args()
 
     swap_dir = os.path.join("tmp", "duckdb_swap")
@@ -36,7 +48,11 @@ def run() -> None:
     with open(args.file, "r") as query:
         for statement in query.read().split(";"):
             for var in ("start", "end"):
-                statement = re.sub(r"\{\{\s*" + re.escape(var) + r"\s*\}\}", getattr(args, var), statement)
+                statement = re.sub(
+                    r"\{\{\s*" + re.escape(var) + r"\s*\}\}",
+                    str(getattr(args, var)),
+                    statement,
+                )
 
             res = duckdb.sql(statement)
             if res is not None:

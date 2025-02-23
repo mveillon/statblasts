@@ -114,9 +114,9 @@ copy (
     , tur as unearned_runs
     , case when firstf = 0 then null else firstf end as fielder
     , "date" // 10000 as yr
-    , ("date" - (yr * 10000)) // 100 as mo
+    , ("date" // 100) % 100 as mo
     , "date" % 100 as dy
-    from 'data/raw/plays.csv' -- parsed game data
+    from 'data/raw/plays.csv'
     where "date" between {{ start }} * 10000 and {{ end }} * 10000
     and coalesce(event_type, 'other') != 'other'
 ) to 'data/build/plays'
