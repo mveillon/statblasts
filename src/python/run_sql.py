@@ -15,8 +15,8 @@ def run() -> None:
         description=run.__doc__,
     )
     parser.add_argument("-f", "--file", help="the file of the .sql file to run")
-    parser.add_argument("-s", "--start", default="", help="the first year of data to read")
-    parser.add_argument("-e", "--end", default=str(date.today().year), help="the last year of data to read")
+    parser.add_argument("-s", "--start", default=str(date.min.year), help="the first year of data to read")
+    parser.add_argument("-e", "--end", default=str(date.max.year), help="the last year of data to read")
     args = parser.parse_args()
 
     swap_dir = os.path.join("tmp", "duckdb_swap")

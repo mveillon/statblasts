@@ -16,7 +16,7 @@ copy (
             else batteam
         end as home_team
         , row_number() over (partition by gid order by "date") = 1 as rn
-        from 'data/raw/plays.csv'
+        from 'data/raw/plays.csv' -- parsed game data
         where gametype = 'regular'
         and pbp = 'full'
         and "date" between {{ start } * 10000 and {{ end }} * 10000

@@ -162,3 +162,4 @@ data/
 statblasts/
 tmp/
 .vscode/
+src/ad_hoc/sandbox.sql
