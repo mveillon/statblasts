@@ -1,3 +1,5 @@
-select distinct di
-from 'data/raw/plays.csv'
+select *
+from 'data/build/players/*/*.parquet'
+where player_id = 'choij001'
+limit 10
 ;

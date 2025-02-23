@@ -99,20 +99,16 @@ copy (
         ],
         p -> p > 0
     ) as error_positions
-    , case when br1_pre = '' then null else br1_pre end as on_first_pre
-    , case when br2_pre = '' then null else br1_pre end as on_second_pre
-    , case when br3_pre = '' then null else br1_pre end as on_third_pre
-    , case when br1_post = '' then null else br1_pre end as on_first_post
-    , case when br1_post = '' then null else br1_pre end as on_second_post
-    , case when br1_post = '' then null else br1_pre end as on_third_post
-    , case when run_b = '' then 0 else 1 end as batter_scored
-    , case when run1 = '' then 0 else 1 end as on_first_scored
-    , case when run2 = '' then 0 else 1 end as on_second_scored
-    , case when run3 = '' then 0 else 1 end as on_third_scored
+    , nullif(br1_pre, '') as on_first_pre
+    , nullif(br2_pre, '') as on_second_pre
+    , nullif(br3_pre, '') as on_third_pre
+    , nullif(br1_post, '') as on_first_post
+    , nullif(br2_post, '') as on_second_post
+    , nullif(br3_post, '') as on_third_post
     , case when run_b = '' then null else pitcher end as pitcher_charged_batter
-    , case when prun1 = '' then null else prun1 end as pitcher_charged_first
-    , case when prun2 = '' then null else prun2 end as pitcher_charged_second
-    , case when prun3 = '' then null else prun3 end as pitcher_charged_third 
+    , nullif(prun1, '') as pitcher_charged_first
+    , nullif(prun2, '') as pitcher_charged_second
+    , nullif(prun3, '') as pitcher_charged_third
     , rbi
     , er as earned_runs
     , tur as unearned_runs
