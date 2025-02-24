@@ -25,6 +25,7 @@ copy (
     from 'data/raw/teamstats.csv'
     where stattype = 'value'
     and gametype = 'regular'
+    and yr between {{ start }} and {{ end }}
 )
 to 'data/build/lineups'
 (

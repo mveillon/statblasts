@@ -6,31 +6,18 @@ from datetime import date
 import re
 
 
-def run() -> None:
+def run_sql(path: str, start: int, end: int) -> None:
     """
-    Runs the query in the file passed on the command line.
-    """
-    parser = argparse.ArgumentParser(
-        prog="sql_runner",
-        description=run.__doc__,
-    )
-    parser.add_argument("-f", "--file", help="the file of the .sql file to run")
-    parser.add_argument(
-        "-s",
-        "--start",
-        type=int,
-        default=date.min.year,
-        help="the first year of data to read. Accesible in SQL file as {{ start }}",
-    )
-    parser.add_argument(
-        "-e",
-        "--end",
-        type=int,
-        default=date.max.year,
-        help="the last year of data to read. Accesible in SQL file as {{ end }}",
-    )
-    args = parser.parse_args()
+    Runs the SQL queries in the given file.
 
+    Parameters:
+        path (str): the path of the .sql file to run
+        start (int): the first year to process
+        end (int): the last year to process
+
+    Returns:
+        None
+    """
     swap_dir = os.path.join("tmp", "duckdb_swap")
     os.makedirs(swap_dir, exist_ok=True)
 
@@ -45,12 +32,12 @@ def run() -> None:
         + "dirty_decay_ms:10000,muzzy_decay_ms:10000"
     )
 
-    with open(args.file, "r") as query:
+    with open(path, "r") as query:
         for statement in query.read().split(";"):
-            for var in ("start", "end"):
+            for var_name, var_val in [("start", start), ("end", end)]:
                 statement = re.sub(
-                    r"\{\{\s*" + re.escape(var) + r"\s*\}\}",
-                    str(getattr(args, var)),
+                    r"\{\{\s*" + re.escape(var_name) + r"\s*\}\}",
+                    str(var_val),
                     statement,
                 )
 

@@ -117,7 +117,7 @@ copy (
     , ("date" // 100) % 100 as mo
     , "date" % 100 as dy
     from 'data/raw/plays.csv'
-    where "date" between {{ start }} * 10000 and {{ end }} * 10000
+    where yr between {{ start }} and {{ end }}
     and coalesce(event_type, 'other') != 'other'
 ) to 'data/build/plays'
 (

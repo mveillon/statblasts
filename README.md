@@ -24,6 +24,8 @@ The `data` folder should also have folders called `build` and `publish`, which i
 
 ## Running SQL
 
-To run a SQL file, simply run `python3 main.py -f <sql-path>` from the command line.
+To run a SQL file, simply run `python3 main.py run -f <sql-path>` from the command line.
 
 Additionally, you can pass a `-s` (start year) and a `-e` (end year) parameter to limit how much data is processed. These parameters can be accessed with the {{ start }} and {{ end }} template variables within the SQL files.
+
+You can also run all the files in `src/dml/build` by running `python3 main.py build`.
