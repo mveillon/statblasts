@@ -1,8 +1,6 @@
-import argparse
 import duckdb
 import os
 import os.path
-from datetime import date
 import re
 
 

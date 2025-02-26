@@ -1,8 +1,8 @@
 from src.python.load_catalog import load_catalog
 
-def generate_build(start: int, end: int, step: int = 10) -> None:
+def generate_publish(start: int, end: int, step: int = 10) -> None:
     """
-    Loads all the tables in the build folder.
+    Loads all the tables in the publish folder.
 
     Parameters:
         start (int): the first year to process
@@ -12,4 +12,5 @@ def generate_build(start: int, end: int, step: int = 10) -> None:
     Returns:
         None
     """
-    load_catalog("build", start, end, step=step)
+    load_catalog("publish", start, end, step=step)
+    

@@ -14,7 +14,10 @@ copy (
         'data/raw/fielding.csv',
         header = true,
         types = {
-            'd_pos': 'varchar'
+            'd_pos': 'varchar',
+            'd_sb': 'int',
+            'd_cs': 'int',
+            'number': 'int'
         }
     )
     where stattype = 'value'

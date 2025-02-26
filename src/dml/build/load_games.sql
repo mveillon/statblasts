@@ -15,7 +15,7 @@ copy (
     , try_cast(attendance as int) as attendance
     , try_cast(temp as int) as game_temp
     , winddir as wind_direction
-    , try_cast(windspeed as int) as wind_speed
+    , nullif(try_cast(windspeed as int), -1) as wind_speed
     , wp as winning_pitcher
     , lp as losing_pitcher
     , save as saving_pitcher
@@ -27,7 +27,11 @@ copy (
         types = {
             'attendance': 'varchar',
             'temp': 'varchar',
-            'windspeed': 'varchar'
+            'windspeed': 'varchar',
+            'innings': 'int',
+            'tiebreaker': 'int',
+            'forfeit': 'int',
+            'suspend': 'int'
         }
     )
     where gametype = 'regular'

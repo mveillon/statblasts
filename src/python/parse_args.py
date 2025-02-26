@@ -1,6 +1,7 @@
 import argparse
 from datetime import date
 
+
 def parse_args() -> argparse.Namespace:
     """
     Parses the command line arguments.
@@ -24,10 +25,13 @@ def parse_args() -> argparse.Namespace:
 
     run_file_parser = subparsers.add_parser("run", help="run a single SQL file")
     build_parser = subparsers.add_parser("build", help="generate tables in build")
+    publish_parser = subparsers.add_parser("publish", help="generate tables in publish")
 
-    run_file_parser.add_argument("-f", "--file", help="the file of the .sql file to run")
+    run_file_parser.add_argument(
+        "-f", "--file", help="the file of the .sql file to run"
+    )
 
-    for subparser in (run_file_parser, build_parser):
+    for subparser in (run_file_parser, build_parser, publish_parser):
         subparser.add_argument(
             "-s",
             "--start",

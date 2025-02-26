@@ -1,12 +1,11 @@
 with teams as (
     select *
-    from 'data/build/teams/*/*.parquet'
+    from 'data/build/teams.csv'
 ),
 dupes as (
-    select team_abbr
-    , yr
+    select team_id
     from teams
-    group by 1, 2
+    group by 1
     having count(*) > 1
 )
 select *
@@ -14,7 +13,6 @@ from teams t
 where exists (
     select 1
     from dupes
-    where team_abbr = t.team_abbr
-    and yr = t.yr
+    where team_id = t.team_id
 )
 ;

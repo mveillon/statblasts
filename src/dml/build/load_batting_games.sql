@@ -20,7 +20,7 @@ copy (
     , b_sf as sacrifice_flies
     , b_hbp as hit_by_pitches
     , b_w as walks
-    , b_iw as int_walks
+    , b_iw as intentional_walks
     , b_k as strikeouts
     , b_sb as stolen_bases
     , b_cs as times_caught_stealing
@@ -33,7 +33,17 @@ copy (
     from read_csv(
         'data/raw/batting.csv',
         header = true,
-        types = {'b_seq': 'varchar'}
+        types = {
+            'b_seq': 'varchar',
+            'b_sf': 'int',
+            'b_iw': 'int',
+            'b_cs': 'int',
+            'b_gdp': 'int',
+            'b_roe': 'int',
+            'dh': 'int',
+            'number': 'int',
+            'vishome': 'int'
+        }
     )
     where "date" between {{ start }} * 10000 and {{ end }} * 10000
     and stattype = 'value'

@@ -50,7 +50,7 @@ copy (
     , b_sf as sacrifice_flies
     , b_hbp as hit_by_pitches
     , try_cast(b_w as int) as walks
-    , b_iw as int_walks
+    , b_iw as intentional_walks
     , try_cast(b_k as int) as strikeouts
     , b_sb as stolen_bases
     , b_cs as times_caught_stealing
@@ -65,7 +65,7 @@ copy (
     , p_er as earned_runs_allowed
     , (p_r - p_er) as unearned_runs_allowed
     , try_cast(p_w as int) as walks_allowed
-    , p_iw as int_walks_allowed
+    , p_iw as intentional_walks_allowed
     , try_cast(p_k as int) as pitcher_strikeouts
     , p_hbp as hit_by_pitches_allowed
     , p_wp as wild_pitches
@@ -83,7 +83,11 @@ copy (
     , win
     , loss
     , tie
+    , b_r as runs_scored
+    , p_r as runs_allowed
     , "date" // 10000 as yr
+    , ("date" // 100) % 100 as mo
+    , "date" % 100 as dy
     from read_csv(
         'data/raw/teamstats.csv',
         header = true,

@@ -34,7 +34,7 @@ copy (
         when walk = 1
         then 'walk'
         when iw = 1
-        then 'int_walk'
+        then 'intentional_walk'
         when k = 1
         then 'strikeout'
         when xi = 1
@@ -116,7 +116,13 @@ copy (
     , "date" // 10000 as yr
     , ("date" // 100) % 100 as mo
     , "date" % 100 as dy
-    from 'data/raw/plays.csv'
+    from read_csv(
+        'data/raw/plays.csv',
+        header = true,
+        types = {
+            'pitches': 'int',
+        }
+    )
     where yr between {{ start }} and {{ end }}
     and coalesce(event_type, 'other') != 'other'
 ) to 'data/build/plays'
