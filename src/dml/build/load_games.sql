@@ -2,11 +2,11 @@ delete from build.games
 where yr between {{ start }} and {{ end }}
 ;
 
-insert into bulid.games
+insert into build.games
 by name
 (
     select gid as game_id
-    , visteam as visting_team
+    , visteam as visiting_team
     , hometeam as home_team
     , "date" // 10000 as yr
     , ("date" // 100) % 100 as mo
@@ -20,7 +20,11 @@ by name
     , timeofgame as time_of_game
     , try_cast(attendance as int) as attendance
     , try_cast(temp as int) as game_temp
-    , winddir as wind_direction
+    , case
+        when lower(winddir) in ('null', 'unknown')
+        then null
+        else winddir
+    end as wind_direction
     , nullif(try_cast(windspeed as int), -1) as wind_speed
     , wp as winning_pitcher
     , lp as losing_pitcher

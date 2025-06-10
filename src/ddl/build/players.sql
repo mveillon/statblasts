@@ -7,7 +7,7 @@ create table if not exists build.players
     , throw_hand string
     , primary_position string
     , debut_year int
-    , final_season int
+    , final_year int
     , primary key (player_id)
 )
 ;

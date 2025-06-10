@@ -11,10 +11,11 @@ create table if not exists build.games
     , time_of_game int
     , attendance int
     , game_temp int
-    , wind_direction int
+    , wind_direction string
     , wind_speed int
     , winning_pitcher string
     , losing_pitcher string
+    , saving_pitcher string
     , visting_score int
     , home_score int
     , gametype string

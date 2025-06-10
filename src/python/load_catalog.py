@@ -44,7 +44,6 @@ def load_catalog(
         print(f"Processing {current} to {batch_end}.")
 
         for path in dml_files:
-            print(f"\tRunning {path}.")
             run_file(path, subs={"start": current, "end": batch_end})
 
         current = batch_end + 1
