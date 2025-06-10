@@ -1,4 +1,10 @@
-copy (
+delete from publish.fielding_yearly
+where yr between {{ start }} and {{ end }}
+;
+
+insert into publish.fielding_yearly
+by name
+(
     with totals as (
         select player_id
         , yr
@@ -9,7 +15,7 @@ copy (
         , sum(errors) as errors
         , sum(double_plays) as double_plays
         , sum(triple_plays) as triple_plays
-        from 'data/build/fielding_games/*/*/*.parquet'
+        from build.fielding_games
         where yr between {{ start }} and {{ end }}
         group by yr, player_id, gametype
     ),
@@ -37,11 +43,5 @@ copy (
     , triple_plays
     , nullif(fielding_percentage, 'nan') as fielding_percentage
     from averages
-)
-to 'data/publish/fielding_yearly'
-(
-    format parquet,
-    partition_by (yr, gametype),
-    overwrite true
 )
 ;

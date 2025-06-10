@@ -1,4 +1,10 @@
-copy (
+delete from publish.pitching_yearly
+where yr between {{ start }} and {{ end }}
+;
+
+insert into publish.pitching_yearly
+by name
+(
     with totals as (
         select player_id
         , yr
@@ -26,7 +32,7 @@ copy (
         , sum(case when award = 'loss' then 1 else 0 end) as losses
         , sum(case when award = 'save' then 1 else 0 end) as saves
         , sum(complete_game) as complete_games
-        from 'data/build/pitching_games/*/*/*.parquet'
+        from build.pitching_games
         where yr between {{ start }} and {{ end }}
         group by player_id, yr
     )
@@ -65,11 +71,5 @@ copy (
         else outs_recorded::varchar || '.' || (outs_recorded % 3)::varchar
     end as innings_pitched
     from totals
-)
-to 'data/publish/pitching_yearly'
-(
-    format parquet,
-    partition_by (yr, gametype),
-    overwrite true
 )
 ;

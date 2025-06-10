@@ -1,4 +1,10 @@
-copy (
+delete from publish.teams_yearly
+where yr between {{ start }} and {{ end }}
+;
+
+insert into publish.teams_yearly
+by name
+(
     with totals as (
         select team_id
         , yr
@@ -49,7 +55,7 @@ copy (
         , sum(pitcher_triple_plays) as pitcher_triple_plays
         , sum(runs_scored) as runs_scored
         , sum(runs_allowed) as runs_allowed
-        from 'data/build/team_games/*/*.parquet'
+        from build.team_games
         where yr between {{ start }} and {{ end }}
         group by team_id, yr, gametype
     )
@@ -103,11 +109,5 @@ copy (
     , runs_scored
     , runs_allowed
     from totals
-)
-to 'data/publish/teams_yearly'
-(
-    format parquet,
-    partition_by (yr, gametype),
-    overwrite true
 )
 ;

@@ -1,4 +1,10 @@
-copy (
+delete from publish.batting_yearly
+where yr between {{ start }} and {{ end }}
+;
+
+insert into publish.batting_yearly
+by name
+(
     with totals as (
         select player_id
         , yr
@@ -22,7 +28,7 @@ copy (
         , sum(times_ground_double_play) as times_ground_double_play
         , sum(times_catchers_interference) as times_catchers_interference
         , sum(times_reached_on_error) as times_reached_on_error
-        from 'data/build/batting_games/*/*/*.parquet'
+        from build.batting_games
         where yr between {{ start }} and {{ end }}
         group by yr, player_id, gametype
     ),
@@ -87,11 +93,5 @@ copy (
     , nullif(slugging_percentage - batting_average, 'nan') as isolated_power
     , nullif(on_base_percentage + slugging_percentage, 'nan') as ops
     from averages
-)
-to 'data/publish/batting_yearly'
-(
-    format parquet,
-    partition_by (yr, gametype),
-    overwrite true
 )
 ;
