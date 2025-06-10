@@ -2,6 +2,7 @@ copy (
     with totals as (
         select team_id
         , yr
+        , gametype
         , sum(win) as wins
         , sum(loss) as losses
         , sum(tie) as ties
@@ -48,12 +49,13 @@ copy (
         , sum(pitcher_triple_plays) as pitcher_triple_plays
         , sum(runs_scored) as runs_scored
         , sum(runs_allowed) as runs_allowed
-        from 'data/build/team_games/*/*/*.parquet'
+        from 'data/build/team_games/*/*.parquet'
         where yr between {{ start }} and {{ end }}
-        group by team_id, yr
+        group by team_id, yr, gametype
     )
     select team_id
     , yr
+    , gametype
     , wins
     , losses
     , ties
@@ -105,7 +107,7 @@ copy (
 to 'data/publish/teams_yearly'
 (
     format parquet,
-    partition_by (yr),
+    partition_by (yr, gametype),
     overwrite true
 )
 ;

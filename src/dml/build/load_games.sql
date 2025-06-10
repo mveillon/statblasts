@@ -1,4 +1,10 @@
-copy (
+delete from build.games
+where yr between {{ start }} and {{ end }}
+;
+
+insert into bulid.games
+by name
+(
     select gid as game_id
     , visteam as visting_team
     , hometeam as home_team
@@ -21,6 +27,7 @@ copy (
     , save as saving_pitcher
     , vruns as visting_score
     , hruns as home_score
+    , gametype
     from read_csv(
         'data/raw/gameinfo.csv',
         header = true,
@@ -34,13 +41,6 @@ copy (
             'suspend': 'int'
         }
     )
-    where gametype = 'regular'
-    and yr between {{ start }} and {{ end }}
-)
-to 'data/build/games'
-(
-    format parquet,
-    partition_by (yr, mo, dy),
-    overwrite true
+    where yr between {{ start }} and {{ end }}
 )
 ;

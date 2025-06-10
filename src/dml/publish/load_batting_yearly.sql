@@ -2,6 +2,7 @@ copy (
     with totals as (
         select player_id
         , yr
+        , gametype
         , sum(plate_appearances) as plate_appearances
         , sum(at_bats) as at_bats
         , sum(runs) as runs
@@ -21,13 +22,14 @@ copy (
         , sum(times_ground_double_play) as times_ground_double_play
         , sum(times_catchers_interference) as times_catchers_interference
         , sum(times_reached_on_error) as times_reached_on_error
-        from 'data/build/batting_games/*/*/*/*.parquet'
+        from 'data/build/batting_games/*/*/*.parquet'
         where yr between {{ start }} and {{ end }}
-        group by yr, player_id
+        group by yr, player_id, gametype
     ),
     averages as (
         select player_id
         , yr
+        , gametype
         , plate_appearances
         , at_bats
         , runs
@@ -57,6 +59,7 @@ copy (
     )
     select player_id
     , yr
+    , gametype
     , plate_appearances
     , at_bats
     , runs
@@ -76,28 +79,19 @@ copy (
     , times_ground_double_play
     , times_catchers_interference
     , times_reached_on_error
-    , case when batting_average = 'nan' then 0 else batting_average end as batting_average
-    , case when on_base_percentage = 'nan' then 0 else on_base_percentage end as on_base_percentage
-    , case when slugging_percentage = 'nan' then 0 else slugging_percentage end as slugging_percentage
-    , case when strikeout_percentage = 'nan' then 0 else strikeout_percentage end as strikeout_percentage
-    , case when walk_percentage = 'nan' then 0 else walk_percentage end as walk_percentage
-    , case when babip = 'nan' then 0 else babip end as babip
-    , case
-        when slugging_percentage - batting_average = 'nan'
-        then 0
-        else slugging_percentage - batting_average
-    end as isolated_power
-    , case
-        when on_base_percentage + slugging_percentage = 'nan'
-        then 0
-        else on_base_percentage + slugging_percentage
-    end as ops
+    , nullif(batting_average, 'nan') as batting_average
+    , nullif(on_base_percentage, 'nan') as on_base_percentage
+    , nullif(slugging_percentage, 'nan') as slugging_percentage
+    , nullif(strikeout_percentage, 'nan') as strikeout_percentage
+    , nullif(walk_percentage, 'nan') as walk_percentage
+    , nullif(slugging_percentage - batting_average, 'nan') as isolated_power
+    , nullif(on_base_percentage + slugging_percentage, 'nan') as ops
     from averages
 )
 to 'data/publish/batting_yearly'
 (
     format parquet,
-    partition_by (yr, player_id),
+    partition_by (yr, gametype),
     overwrite true
 )
 ;

@@ -1,4 +1,10 @@
-copy (
+delete from build.fielding_games
+where yr between {{ start }} and {{ end }}
+;
+
+insert into build.fielding_games
+by name
+(
     select gid as game_id
     , id as player_id
     , try_cast(d_pos as int) as position_id
@@ -10,6 +16,7 @@ copy (
     , "date" // 10000 as yr
     , ("date" // 100) % 100 as mo
     , "date" % 100 as dy
+    , gametype
     from read_csv(
         'data/raw/fielding.csv',
         header = true,
@@ -21,13 +28,6 @@ copy (
         }
     )
     where stattype = 'value'
-    and gametype = 'regular'
     and yr between {{ start }} and {{ end }}
-)
-to 'data/build/fielding_games'
-(
-    format parquet,
-    partition_by (yr, mo, dy),
-    overwrite true
 )
 ;

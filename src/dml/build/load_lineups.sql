@@ -1,4 +1,10 @@
-copy (
+delete from build.lineups
+where yr between {{ start }} and {{ end }}
+;
+
+insert into build.lineups
+by name
+(
     select gid as game_id
     , team as team_id
     , "date" // 10000 as yr
@@ -22,15 +28,10 @@ copy (
     , start_f7 as left_field
     , start_f8 as center_field
     , start_f9 as right_field
+    , gametype
     from 'data/raw/teamstats.csv'
     where stattype = 'value'
     and gametype = 'regular'
     and yr between {{ start }} and {{ end }}
-)
-to 'data/build/lineups'
-(
-    format parquet,
-    partition_by (yr, team_id),
-    overwrite true
 )
 ;

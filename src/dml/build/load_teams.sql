@@ -1,4 +1,8 @@
-copy (
+delete from build.teams;
+
+insert into build.teams
+by name
+(
     select team as team_id
     , city as location
     , nickname
@@ -13,10 +17,5 @@ copy (
         , last_g % 100
     ) as last_game
     from 'data/raw/biodata/teams0.csv'
-)
-to 'data/build/teams.csv'
-(
-    format csv,
-    overwrite true
 )
 ;

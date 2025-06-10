@@ -1,4 +1,10 @@
-copy (
+delete from build.batting_games
+where yr between {{ start }} and {{ end }}
+;
+
+insert into build.batting_games
+by name
+(
     select gid as game_id
     , id as player_id
     , b_lp as lineup_pos
@@ -6,7 +12,7 @@ copy (
         when b_seq = '1'
         then 0
         else 1
-    end as is_pinch_hitter
+    end as was_pinch_hitter
     , pr as was_pinch_runner
     , b_pa as plate_appearances
     , b_ab as at_bats
@@ -30,6 +36,7 @@ copy (
     , "date" // 10000 as yr
     , ("date" // 100) % 100 as mo
     , "date" % 100 as dy
+    , gametype
     from read_csv(
         'data/raw/batting.csv',
         header = true,
@@ -45,13 +52,8 @@ copy (
             'vishome': 'int'
         }
     )
-    where "date" between {{ start }} * 10000 and {{ end }} * 10000
+    where 1=1
+    and yr between {{ start }} and {{ end }}
     and stattype = 'value'
-)
-to 'data/build/batting_games'
-(
-    format parquet,
-    partition_by (yr, mo, dy),
-    overwrite true
 )
 ;

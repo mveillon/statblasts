@@ -1,14 +1,15 @@
 import os
 import os.path
 import glob
-import shutil
 from datetime import date
 from typing import Literal
 
-from src.python.run_sql import run_sql
+from src.python.run_sql import run_file, run_query
 
 
-def load_catalog(catalog: Literal["build", "publish"], start: int, end: int, step: int = 10) -> None:
+def load_catalog(
+    catalog: Literal["build", "publish"], start: int, end: int, step: int = 0
+) -> None:
     """
     Generates all the tables in the given folder.
 
@@ -16,26 +17,34 @@ def load_catalog(catalog: Literal["build", "publish"], start: int, end: int, ste
         catalog (str): whether to load build or publish
         start (int): the first year to process
         end (int): the last day to process
-        step (int): the number of years per batch to process. Default is 10
+        step (int): the number of years per batch to process. If zero, the default,
+            everything will be done in one batch
 
     Returns:
         None
     """
-    target_dir = os.path.join("data", catalog)
-    if os.path.exists(target_dir):
-        shutil.rmtree(target_dir)
+    ddl_files = glob.glob(os.path.join("src", "ddl", catalog, "*.sql"))
+    for path in ddl_files:
+        run_query(
+            "drop table if exists "
+            + f"{catalog}.{os.path.splitext(os.path.basename(path))[0]};"
+        )
+        run_file(path)
 
-    os.makedirs(target_dir, exist_ok=True)
-    sql_files = glob.glob(os.path.join("src", "dml", catalog, "*.sql"))
+    dml_files = glob.glob(os.path.join("src", "dml", catalog, "*.sql"))
 
     current = start
-    step = 9
-    while current <= min(date.today().year, end):
-        batch_end = current + step
+    end = min(date.today().year, end)
+    while current <= end:
+        if step == 0:
+            batch_end = end
+        else:
+            batch_end = current + step - 1
+
         print(f"Processing {current} to {batch_end}.")
 
-        for path in sql_files:
+        for path in dml_files:
             print(f"\tRunning {path}.")
-            run_sql(path, current, batch_end)
+            run_file(path, subs={"start": current, "end": batch_end})
 
         current = batch_end + 1

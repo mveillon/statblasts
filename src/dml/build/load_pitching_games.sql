@@ -1,4 +1,10 @@
-copy (
+delete from build.pitching_games
+where yr between {{ start }} and {{ end }}
+;
+
+insert into build.pitching_games
+by name
+(
     select gid as game_id
     , id as player_id
     , case
@@ -34,6 +40,7 @@ copy (
         then 'save'
     end as award
     , p_cg as complete_game
+    , gametype
     , "date" // 10000 as yr
     , ("date" // 100) % 100 as mo
     , "date" % 100 as dy
@@ -45,13 +52,6 @@ copy (
         }
     )
     where stattype = 'value'
-    and gametype = 'regular'
     and yr between {{ start }} and {{ end }}
-)
-to 'data/build/pitching_games'
-(
-    format parquet,
-    partition_by (yr, mo, dy),
-    overwrite true
 )
 ;

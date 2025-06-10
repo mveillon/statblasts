@@ -1,4 +1,11 @@
-copy (
+delete from build.players
+where debut_year >= {{ start }}
+and coalesce(final_year, year(current_date)) <= {{ end }}
+;
+
+insert into build.players
+by name
+(
     with players as (
         select id as player_id
         , first as first_name
@@ -64,6 +71,8 @@ copy (
             then 'DH'
             else null
         end as primary_position
+        , min(season) over (partition by player_id) as debut_year
+        , nullif(max(season) over (partition by player_id), year(current_date)) as final_year
         , row_number() over (
             partition by player_id
             order by season desc
@@ -76,12 +85,9 @@ copy (
     , bat_hand
     , throw_hand
     , primary_position
+    , debut_year
+    , final_year
     from partitioned
     where rn = 1
 )
-to 'data/build/players'
-(
-    format parquet,
-    partition_by (primary_position),
-    overwrite true
-)
+;
