@@ -8,6 +8,7 @@ create table if not exists build.fielding_games
     , errors int
     , double_plays int
     , triple_plays int
+    , is_home int
     , yr int
     , mo int
     , dy int

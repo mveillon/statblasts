@@ -24,6 +24,7 @@ create table if not exists build.pitching_games
     , caught_stealing int
     , award string
     , complete_game int
+    , is_home int
     , gametype string
     , yr int
     , mo int

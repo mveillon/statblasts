@@ -55,6 +55,7 @@ create table if not exists build.team_games
     , mo int
     , dy int
     , game_number int
+    , is_home int
     , gametype string
     , primary key (game_id, team_id)
 )

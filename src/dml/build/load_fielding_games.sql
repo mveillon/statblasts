@@ -14,6 +14,7 @@ by name
         , d_e as errors
         , d_dp as double_plays
         , d_tp as triple_plays
+        , case when vishome = 'v' then 0 when vishome = 'h' then 1 end as is_home
         , "date" // 10000 as yr
         , ("date" // 100) % 100 as mo
         , "date" % 100 as dy
@@ -40,6 +41,7 @@ by name
     , errors
     , double_plays
     , triple_plays
+    , is_home
     , yr
     , mo
     , dy

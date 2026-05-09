@@ -41,6 +41,7 @@ by name
             then 'save'
         end as award
         , p_cg as complete_game
+        , case when vishome = 'v' then 0 when vishome = 'h' then 1 end as is_home
         , gametype
         , "date" // 10000 as yr
         , ("date" // 100) % 100 as mo
@@ -80,6 +81,7 @@ by name
     , caught_stealing
     , award
     , complete_game
+    , is_home
     , gametype
     , yr
     , mo

@@ -88,6 +88,7 @@ by name
     , tie
     , b_r as runs_scored
     , p_r as runs_allowed
+    , case when vishome = 'v' then 0 when vishome = 'h' then 1 end as is_home
     , "date" // 10000 as yr
     , ("date" // 100) % 100 as mo
     , "date" % 100 as dy

@@ -6,6 +6,8 @@ All data downloaded from [Retrosheet](https://www.retrosheet.org/).
 
 The code can be downloaded and ran locally using the instructions below.
 
+Created by Michael Veillon.
+
 ## Installation
 
 Clone the repository to your machine using `git clone https://github.com/mveillon/statblasts`. 

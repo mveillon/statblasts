@@ -34,6 +34,7 @@ by name
         , b_gdp as times_ground_double_play
         , b_xi as times_catchers_interference
         , b_roe as times_reached_on_error
+        , case when vishome = 'v' then 0 when vishome = 'h' then 1 end as is_home
         , "date" // 10000 as yr
         , ("date" // 100) % 100 as mo
         , "date" % 100 as dy
@@ -81,6 +82,7 @@ by name
     , times_ground_double_play
     , times_catchers_interference
     , times_reached_on_error
+    , is_home
     , yr
     , mo
     , dy

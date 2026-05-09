@@ -24,6 +24,7 @@ create table if not exists build.batting_games
     , times_ground_double_play int
     , times_catchers_interference int
     , times_reached_on_error int
+    , is_home int
     , yr int
     , mo int
     , dy int
