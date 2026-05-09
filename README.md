@@ -6,6 +6,8 @@ All data downloaded from [Retrosheet](https://www.retrosheet.org/).
 
 The code can be downloaded and ran locally using the instructions below.
 
+Created by Michael Veillon.
+
 ## Installation
 
 Clone the repository to your machine using `git clone https://github.com/mveillon/statblasts`. 
@@ -18,7 +20,9 @@ To install the needed Python dependencies, run `python3 -m pip install -r requir
 
 The raw, unformatted data should be present in a folder called `data` at the root level. 
 
-All seven pre-parsed csv files, downloaded from [here](http://web.archive.org/web/20250104174619/https://www.retrosheet.org/downloads/othercsvs.html), should be at the top level of `data`.
+All seven pre-parsed csv files, downloaded from [here](http://web.archive.org/web/20250104174619/https://www.retrosheet.org/downloads/othercsvs.html), should be in the `data/raw` folder.
+
+For reference, the schemas of the tables in `raw` are documented [here](https://web.archive.org/web/20250417190441/https://www.retrosheet.org/downloads/csvcontents.html).
 
 The `data` folder should also have folders called `build` and `publish`, which is where output tables should go.
 

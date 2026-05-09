@@ -1,4 +1,8 @@
-copy (
+delete from build.positions;
+
+insert into build.positions
+by name
+(
     select position_id
     , abbreviation
     , position_name
@@ -21,8 +25,5 @@ copy (
             (500, 'PR', 'pinch runner'),
             (600, 'X', 'other')
     ) positions(position_id, abbreviation, position_name)
-)  to 'data/build/positions.csv'
-(
-    overwrite true
 )
 ;

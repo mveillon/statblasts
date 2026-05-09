@@ -1,42 +1,45 @@
-copy (
+delete from build.team_games
+where yr between {{ start }} and {{ end }}
+;
+
+insert into build.team_games
+by name
+(
     select gid as game_id
     , team as team_id
-    , [
-        try_cast(inn1 as int),
-        try_cast(inn2 as int),
-        try_cast(inn3 as int),
-        try_cast(inn4 as int),
-        try_cast(inn5 as int),
-        try_cast(inn6 as int),
-        try_cast(inn7 as int),
-        try_cast(inn8 as int),
-        try_cast(inn9 as int),
-        case
-            when try_cast(inn10 as int) is null
-            then null
-            else (
-                coalesce(try_cast(inn10 as int), 0)
-                + coalesce(try_cast(inn11 as int), 0)
-                + coalesce(try_cast(inn12 as int), 0)
-                + coalesce(try_cast(inn13 as int), 0)
-                + coalesce(try_cast(inn14 as int), 0)
-                + coalesce(try_cast(inn15 as int), 0)
-                + coalesce(try_cast(inn16 as int), 0)
-                + coalesce(try_cast(inn17 as int), 0)
-                + coalesce(try_cast(inn18 as int), 0)
-                + coalesce(try_cast(inn19 as int), 0)
-                + coalesce(try_cast(inn20 as int), 0)
-                + coalesce(try_cast(inn21 as int), 0)
-                + coalesce(try_cast(inn22 as int), 0)
-                + coalesce(try_cast(inn23 as int), 0)
-                + coalesce(try_cast(inn24 as int), 0)
-                + coalesce(try_cast(inn25 as int), 0)
-                + coalesce(try_cast(inn26 as int), 0)
-                + coalesce(try_cast(inn27 as int), 0)
-                + coalesce(try_cast(inn28 as int), 0)
-            )
-        end
-    ] as box_score
+    , filter(
+        [
+            try_cast(inn1 as int),
+            try_cast(inn2 as int),
+            try_cast(inn3 as int),
+            try_cast(inn4 as int),
+            try_cast(inn5 as int),
+            try_cast(inn6 as int),
+            try_cast(inn7 as int),
+            try_cast(inn8 as int),
+            try_cast(inn9 as int),
+            try_cast(inn10 as int),
+            try_cast(inn11 as int),
+            try_cast(inn12 as int),
+            try_cast(inn13 as int),
+            try_cast(inn14 as int),
+            try_cast(inn15 as int),
+            try_cast(inn16 as int),
+            try_cast(inn17 as int),
+            try_cast(inn18 as int),
+            try_cast(inn19 as int),
+            try_cast(inn20 as int),
+            try_cast(inn21 as int),
+            try_cast(inn22 as int),
+            try_cast(inn23 as int),
+            try_cast(inn24 as int),
+            try_cast(inn25 as int),
+            try_cast(inn26 as int),
+            try_cast(inn27 as int),
+            try_cast(inn28 as int)
+        ],
+        x -> x is not null
+    ) as box_score
     , case when regexp_full_match(inn10, '[0-9]') then 1 else 0 end as extra_innings
     , mgr as manager_id
     , b_pa as plate_appearances
@@ -85,9 +88,12 @@ copy (
     , tie
     , b_r as runs_scored
     , p_r as runs_allowed
+    , case when vishome = 'v' then 0 when vishome = 'h' then 1 end as is_home
     , "date" // 10000 as yr
     , ("date" // 100) % 100 as mo
     , "date" % 100 as dy
+    , number as game_number
+    , gametype
     from read_csv(
         'data/raw/teamstats.csv',
         header = true,
@@ -126,13 +132,7 @@ copy (
             'p_w': 'varchar'
         }
     )
-    where stattype = 'value'
-    and gametype = 'regular'
-)
-to 'data/build/team_games'
-(
-    format parquet,
-    partition_by (yr, team_id),
-    overwrite true
+    where yr between {{ start }} and {{ end }}
+    and stattype = 'value'
 )
 ;

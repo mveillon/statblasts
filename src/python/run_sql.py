@@ -3,18 +3,20 @@ import os
 import os.path
 import re
 
+from typing import Dict, Any, List
 
-def run_sql(path: str, start: int, end: int) -> None:
+
+def run_query(query: str, subs: Dict[str, Any] = {}) -> None:
     """
-    Runs the SQL queries in the given file.
+    Runs a single query and returns the output, if there is one.
 
     Parameters:
-        path (str): the path of the .sql file to run
-        start (int): the first year to process
-        end (int): the last year to process
+        query (str): the query to run
+        subs (Dict[str, Any]): dictionary containing substitutions to perform
+            in the query
 
     Returns:
-        None
+        out (Optional[Relation]): the output relation, or None if there is not one
     """
     swap_dir = os.path.join("tmp", "duckdb_swap")
     os.makedirs(swap_dir, exist_ok=True)
@@ -22,23 +24,42 @@ def run_sql(path: str, start: int, end: int) -> None:
     options = {
         "temp_directory": swap_dir,
     }
-    for var_name, value in options.items():
-        duckdb.sql(f"set {var_name} = '{value}';")
 
     os.environ["MALLOC_CONF"] = (
         f"narenas:{os.cpu_count()},lg_chunk:21,background_thread:true,"
         + "dirty_decay_ms:10000,muzzy_decay_ms:10000"
     )
 
-    with open(path, "r") as query:
-        for statement in query.read().split(";"):
-            for var_name, var_val in [("start", start), ("end", end)]:
-                statement = re.sub(
-                    r"\{\{\s*" + re.escape(var_name) + r"\s*\}\}",
-                    str(var_val),
-                    statement,
-                )
+    for key, val in subs.items():
+        query = re.sub(r"\{\{\s*" + re.escape(key) + r"\s*\}\}", str(val), query)
 
-            res = duckdb.sql(statement)
+    with duckdb.connect(os.path.join("data", "output.db")) as duck:
+        for var_name, value in options.items():
+            duck.sql(f"set {var_name} = '{value}';")
+
+        res = duck.sql(query)
+        if res is not None:
+            res.show()
+
+
+def run_file(path: str, subs: Dict[str, Any] = {}) -> List[duckdb.DuckDBPyRelation]:
+    """
+    Runs the file passed to `path`.
+
+    Parameters:
+        path (str): the path to the .sql file to run
+        subs (Dict[str, Any]): dictionary containing substitutions to perform
+            in the query
+
+    Returns:
+        out (List[Relation]): a relation for each statment with a return value
+    """
+    out = []
+    with open(path, "r") as query:
+        print(f"Running {path}")
+        for statement in query.read().split(";"):
+            res = run_query(statement, subs=subs)
             if res is not None:
-                res.show()
+                out.append(res)
+
+    return out

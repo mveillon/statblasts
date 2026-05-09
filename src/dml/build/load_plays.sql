@@ -1,4 +1,10 @@
-copy (
+delete from build.plays
+where yr between {{ start }} and {{ end }}
+;
+
+insert into build.plays
+by name
+(
     select gid || pn || uuid() as play_id
     , gid as game_id
     , inning
@@ -7,7 +13,7 @@ copy (
     , batter
     , pitcher
     , outs_pre
-    , count
+    , count as bs_count
     , nump as num_pitches
     , pa as was_pa
     , ab as was_ab
@@ -113,6 +119,7 @@ copy (
     , er as earned_runs
     , tur as unearned_runs
     , case when firstf = 0 then null else firstf end as fielder
+    , gametype
     , "date" // 10000 as yr
     , ("date" // 100) % 100 as mo
     , "date" % 100 as dy
@@ -124,11 +131,5 @@ copy (
         }
     )
     where yr between {{ start }} and {{ end }}
-    and coalesce(event_type, 'other') != 'other'
-) to 'data/build/plays'
-(
-    format parquet,
-    partition_by (yr, mo, dy),
-    overwrite true
 )
 ;
